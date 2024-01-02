@@ -25,12 +25,16 @@ export default {
   },
   async created() {
     const username = useAuthStore().username
-    const docSnap = getDoc(doc(firebaseDB, 'users', username)).then((doc) => {
-      if (doc.exists()) {
-        console.log('data', doc.data())
-        this.data = doc.data()
-      }
-    })
+    if (username) {
+      const docSnap = getDoc(doc(firebaseDB, 'users', username)).then((doc) => {
+        if (doc.exists()) {
+          console.log('data', doc.data())
+          this.data = doc.data()
+        }
+      })
+    } else {
+      this.$router.push('/auth')
+    }
   },
   computed: {
     results() {
