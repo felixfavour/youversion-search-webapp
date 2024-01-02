@@ -302,7 +302,8 @@ header {
 }
 
 .youversion-search-main {
-  width: 550px;
+  width: 100%;
+  max-width: 550px;
   margin: 0 auto;
   padding: 2rem;
   background: #fff;
