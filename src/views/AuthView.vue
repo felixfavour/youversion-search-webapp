@@ -1,5 +1,6 @@
 <script>
 // import data from "./data"
+import { useCookies } from '@vueuse/integrations/useCookies'
 import { collection, doc, getDoc, getDocs } from 'firebase/firestore'
 import { firebaseDB } from '../../plugins/firebase'
 import { useAuthStore } from '../stores/auth'
@@ -31,6 +32,7 @@ export default {
   methods: {
     async login() {
       useAuthStore().setUsername(this.username)
+      useCookies(['username']).set('username', this.username)
       this.$router.push('/')
     }
   }

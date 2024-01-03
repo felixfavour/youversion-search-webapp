@@ -1,5 +1,6 @@
 <script>
 // import data from "./data"
+import { useCookies } from '@vueuse/integrations/useCookies'
 import { useAuthStore } from '../stores/auth'
 import { collection, doc, getDoc, getDocs } from 'firebase/firestore'
 import { firebaseDB } from '../../plugins/firebase'
@@ -24,7 +25,7 @@ export default {
     }
   },
   async created() {
-    const username = useAuthStore().username
+    const username = useCookies(['locale']).get('username')
     if (username) {
       this.getData(username)
     } else {
@@ -58,7 +59,7 @@ export default {
       const docSnap = await getDoc(doc(firebaseDB, 'users', username))
       if (docSnap.exists()) {
         this.data = docSnap.data()
-        console.log('data', JSON.stringify(docSnap.data()))
+        // console.log('data', JSON.stringify(docSnap.data()))
       }
       this.loading = false
     },
