@@ -1,5 +1,9 @@
 <script setup>
 import { RouterView } from 'vue-router'
+
+useHead({
+  title: 'Youversion Search'
+})
 </script>
 
 <template>

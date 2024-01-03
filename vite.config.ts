@@ -14,7 +14,7 @@ export default defineConfig({
       manifest: {
         name: 'Youversion Search',
         short_name: 'YouversionSearch',
-        description: 'Youversion Search enable you to elevate your Bible study experience. Discover a new level of engagement with the scriptures by filtering past notes and bookmarks on the app',
+        description: 'Youversion Search enable you to elevate your Bible study experience. Discover a new level of engagement with the scriptures by filtering past notes and bookmarks on the app.',
         theme_color: '#ffab2d',
         icons: [
           {
