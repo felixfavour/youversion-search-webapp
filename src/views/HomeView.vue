@@ -26,12 +26,7 @@ export default {
   async created() {
     const username = useAuthStore().username
     if (username) {
-      const docSnap = getDoc(doc(firebaseDB, 'users', username)).then((doc) => {
-        if (doc.exists()) {
-          console.log('data', doc.data())
-          this.data = doc.data()
-        }
-      })
+      this.getData(username)
     } else {
       this.$router.push('/auth')
     }
@@ -58,20 +53,17 @@ export default {
     }
   },
   methods: {
-    async refreshData() {
+    async getData(username) {
       this.loading = true
-      window.open('https://my.bible.com/profile', '_newtab')
-      const storage = await chrome.storage.local.get()
-      await chrome.storage.local.set({
-        bookmarks: [],
-        notes: [],
-        lastUpdated: null
-      })
-      this.data = {
-        bookmarks: storage.bookmarks,
-        notes: storage.notes,
-        lastUpdated: storage.lastUpdated
+      const docSnap = await getDoc(doc(firebaseDB, 'users', username))
+      if (docSnap.exists()) {
+        console.log('data', JSON.stringify(docSnap.data()))
+        this.data = docSnap.data()
       }
+      this.loading = false
+    },
+    async refreshData() {
+      this.getData()
       // this.loading = false
     }
   },
@@ -85,10 +77,12 @@ export default {
       <header>
         <div class="flex">
           <h1>Youversion Search</h1>
-          <span>by <a href="https://favourfelix.com" target="_blank">Favour Felix</a></span>
+          <span class="text-2"
+            >by <a href="https://favourfelix.com" target="_blank">Favour Felix</a></span
+          >
         </div>
         <div class="flex">
-          <span>
+          <span class="text-3">
             Last updated: {{ new Date(data.lastUpdated).toDateString().substring(4) }},
             <a @click="refreshData" target="_blank">Refresh Data</a>
           </span>
@@ -156,7 +150,14 @@ main {
 
 h1 {
   margin-top: 0;
-  margin-bottom: 0.4rem;
+  margin-bottom: 0rem;
+  font-size: 1.5rem;
+}
+h1 + span.text-2 {
+  margin-bottom: 0.7rem;
+}
+span.text-3 {
+  color: #00000070;
 }
 
 /* YOUVERSION SEARCH CONTENT */
@@ -170,6 +171,9 @@ header {
   top: 0;
   background: #ffffff;
   padding-top: 1rem;
+}
+header input {
+  margin-bottom: 1rem;
 }
 
 .center {
@@ -251,7 +255,8 @@ header {
 
 .flex {
   display: flex;
-  align-items: flex-end;
+  flex-direction: column;
+  align-items: center;
   position: relative;
 }
 
@@ -261,7 +266,7 @@ header {
 
 .flex span {
   white-space: nowrap;
-  margin-bottom: 1rem;
+  margin-bottom: 0;
   font-size: 0.8rem;
   margin-left: 6px;
 }
@@ -305,7 +310,7 @@ header {
   width: 100%;
   max-width: 550px;
   margin: 0 auto;
-  padding: 2rem;
+  padding: 0.75rem;
   background: #fff;
   opacity: 0;
   transform: translateY(100px);

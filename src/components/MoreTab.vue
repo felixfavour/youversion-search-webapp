@@ -41,6 +41,9 @@ export default {
 </script>
 
 <style scoped>
+h3 {
+  padding: 0 1rem;
+}
 .more-btn {
   width: calc(100% - 2rem);
   display: flex;

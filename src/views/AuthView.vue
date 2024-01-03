@@ -67,7 +67,7 @@ export default {
   </div>
 </template>
 
-<style>
+<style scoped>
 main {
   padding: 1rem 0;
 }
@@ -88,6 +88,18 @@ header {
   top: 0;
   background: #ffffff;
   padding-top: 1rem;
+}
+.flex {
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+}
+.flex span {
+  white-space: nowrap;
+  margin-bottom: 1rem;
+  font-size: 0.8rem;
+  margin-left: 6px;
+  display: block;
 }
 .form-ctn {
   background: #ffab2d20;
