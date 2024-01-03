@@ -10,7 +10,7 @@ export default defineConfig({
     vue(),
     VitePWA({
       registerType: 'autoUpdate',
-      includeAssets: [''],
+      includeAssets: ['favicon.ico'],
       manifest: {
         name: 'Youversion Search',
         short_name: 'YouversionSearch',
