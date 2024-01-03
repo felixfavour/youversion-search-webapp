@@ -105,7 +105,8 @@ header {
   background: #ffab2d20;
   padding: 8% 0;
   border-radius: 24px;
-  margin-top: 2rem;
+  width: 90%;
+  margin: 2rem auto;
 }
 
 form {

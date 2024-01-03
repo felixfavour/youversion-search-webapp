@@ -57,8 +57,8 @@ export default {
       this.loading = true
       const docSnap = await getDoc(doc(firebaseDB, 'users', username))
       if (docSnap.exists()) {
-        console.log('data', JSON.stringify(docSnap.data()))
         this.data = docSnap.data()
+        console.log('data', JSON.stringify(docSnap.data()))
       }
       this.loading = false
     },
@@ -72,7 +72,7 @@ export default {
 </script>
 
 <template>
-  <div id="youversion-search">
+  <div id="youversion-search" class="homeview">
     <div class="youversion-search-main active">
       <header>
         <div class="flex">
@@ -145,7 +145,7 @@ export default {
 
 <style>
 main {
-  padding: 1rem 0;
+  padding: 0;
 }
 
 h1 {
@@ -196,6 +196,11 @@ header input {
 .center span a {
   color: #ffab2d;
   text-decoration: none;
+}
+
+.homeview {
+  max-width: 95%;
+  margin: 0 auto;
 }
 
 #youversion-search {
@@ -310,7 +315,7 @@ header input {
   width: 100%;
   max-width: 550px;
   margin: 0 auto;
-  padding: 0.75rem;
+  padding: 0;
   background: #fff;
   opacity: 0;
   transform: translateY(100px);
