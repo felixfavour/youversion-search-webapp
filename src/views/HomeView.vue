@@ -1,75 +1,56 @@
-<script>
-// import data from "./data"
+<script setup>
+import { ref, watch, computed } from 'vue'
+import { refDebounced } from '@vueuse/core'
 import { useCookies } from '@vueuse/integrations/useCookies'
-import { useAuthStore } from '../stores/auth'
-import { collection, doc, getDoc, getDocs } from 'firebase/firestore'
-import { firebaseDB } from '../../plugins/firebase'
-import NotesTab from '../components/NotesTab.vue'
-import BookmarksTab from '../components/BookmarksTab.vue'
-import MoreIcon from '../components/MoreIcon.vue'
-import MoreTab from '../components/MoreTab.vue'
-import MobileSetup from '../components/MobileSetup.vue'
+import { getDoc, doc } from 'firebase/firestore'
+import { firebaseDB } from '../../plugins/firebase' // Import your Firebase setup
+import { useRouter } from 'vue-router'
+import MoreIcon from '@/components/MoreIcon.vue'
+import BookmarksTab from '@/components/BookmarksTab.vue'
+import NotesTab from '@/components/NotesTab.vue'
+import MoreTab from '@/components/MoreTab.vue'
 
-export default {
-  name: 'HomeView',
-  props: {
-    stuff: String
-  },
-  data() {
-    return {
-      tab: 'bookmarks',
-      data: { bookmarks: [], notes: [], lastUpdated: '2023' },
-      query: '',
-      loading: false,
-      optionActive: null
-    }
-  },
-  async created() {
-    const username = useCookies(['locale']).get('username')
-    if (username) {
-      this.getData(username)
-    } else {
-      this.$router.push('/auth')
-    }
-  },
-  computed: {
-    results() {
-      if (this.query) {
-        let cardsInner =
-          this.tab === 'bookmarks' ? this.data.bookmarks || [] : this.data.notes || []
-        console.log('cardsInner', cardsInner)
-        return cardsInner.filter(
-          (card) =>
-            JSON.stringify(card.labels)?.toLowerCase().includes(this.query.toLowerCase()) ||
-            JSON.stringify(card.references)?.toLowerCase().includes(this.query.toLowerCase()) ||
-            JSON.stringify(card.content)?.toLowerCase().includes(this.query.toLowerCase())
-        )
-      }
-      return null
-    }
-  },
-  watch: {
-    tab() {
-      this.optionActive = null
-    }
-  },
-  methods: {
-    async getData(username) {
-      this.loading = true
-      const docSnap = await getDoc(doc(firebaseDB, 'users', username))
-      if (docSnap.exists()) {
-        this.data = docSnap.data()
-        // console.log('data', JSON.stringify(docSnap.data()))
-      }
-      this.loading = false
-    },
-    async refreshData() {
-      this.getData()
-      // this.loading = false
-    }
-  },
-  components: { NotesTab, BookmarksTab, MoreIcon, MoreTab, MobileSetup }
+const tab = ref('bookmarks')
+const data = ref({ bookmarks: [], notes: [], lastUpdated: '2023' })
+const query = ref('')
+const debouncedQuery = refDebounced(query, 1500)
+const loading = ref(false)
+const optionActive = ref(null)
+
+const username = useCookies(['locale']).get('username')
+
+const getData = async (username) => {
+  loading.value = true
+  const docSnap = await getDoc(doc(firebaseDB, 'users', username))
+  if (docSnap.exists()) {
+    data.value = docSnap.data()
+    // console.log('data', JSON.stringify(docSnap.data()))
+  }
+  loading.value = false
 }
+
+if (username) {
+  getData(username)
+} else {
+  useRouter().push('/auth')
+}
+
+const results = computed(() => {
+  if (debouncedQuery.value) {
+    let cardsInner = tab.value === 'bookmarks' ? data.value.bookmarks || [] : data.value.notes || []
+    return cardsInner.filter(
+      (card) =>
+        JSON.stringify(card.labels)?.toLowerCase().includes(query.value.toLowerCase()) ||
+        JSON.stringify(card.references)?.toLowerCase().includes(query.value.toLowerCase()) ||
+        JSON.stringify(card.content)?.toLowerCase().includes(query.value.toLowerCase())
+    )
+  }
+  return null
+})
+
+watch(tab, () => {
+  optionActive.value = null
+})
 </script>
 
 <template>
@@ -84,8 +65,8 @@ export default {
         </div>
         <div class="flex">
           <span class="text-3">
-            Last updated: {{ new Date(data.lastUpdated).toDateString().substring(4) }},
-            <a @click="refreshData" target="_blank">Refresh Data</a>
+            Last updated: {{ new Date(data.lastUpdated).toDateString().substring(4) }}
+            <!-- <a @click="refreshData" target="_blank">Refresh Data</a> -->
           </span>
         </div>
         <div class="tabs">
@@ -138,8 +119,6 @@ export default {
       </template>
       <!-- MORE OPTIONS CARD -->
       <MoreTab v-else-if="optionActive === null" @option="optionActive = $event" />
-
-      <MobileSetup v-if="optionActive === 'MOBILE_SETUP'" />
     </div>
   </div>
 </template>
