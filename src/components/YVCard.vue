@@ -5,12 +5,12 @@
         {{ item.content || removeHTML(item.moment_title) }}
       </div>
       <div class="labels">
-        <div v-for="chip in item.labels" :key="chip" class="label chip">
+        <button v-for="chip in item.labels" :key="chip" class="label chip" @click="$emit('filter', chip)">
           {{ chip }}
-        </div>
-        <div v-for="scripture in item.references" :key="scripture" class="scripture chip favour">
+        </button>
+        <a  v-for="(scripture, index) in item.references" :key="scripture" :href="`https://my.bible.com/bible/111/${item.links?.at(index)}`" class="scripture chip favour">
           {{ scripture }}
-        </div>
+        </a>
       </div>
       <div class="time">
         {{ new Date(item.created_dt).toDateString().replace(' ', ', ') }}
@@ -82,5 +82,9 @@ export default {
   font-size: 0.85rem;
   margin-top: 0.5rem;
   color: #595959;
+}
+
+a {
+  text-decoration: none;
 }
 </style>

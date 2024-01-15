@@ -1,10 +1,10 @@
 <script setup>
-import { ref, watch, computed } from 'vue'
+import { ref, watch, computed, onMounted } from 'vue'
 import { refDebounced } from '@vueuse/core'
 import { useCookies } from '@vueuse/integrations/useCookies'
 import { getDoc, doc } from 'firebase/firestore'
 import { firebaseDB } from '../../plugins/firebase' // Import your Firebase setup
-import { useRouter } from 'vue-router'
+import { useRoute, useRouter } from 'vue-router'
 import MoreIcon from '@/components/MoreIcon.vue'
 import BookmarksTab from '@/components/BookmarksTab.vue'
 import NotesTab from '@/components/NotesTab.vue'
@@ -17,23 +17,31 @@ const debouncedQuery = refDebounced(query, 1500)
 const loading = ref(false)
 const optionActive = ref(null)
 
-const username = useCookies(['locale']).get('username')
-
 const getData = async (username) => {
   loading.value = true
+  if (username) {
+    localStorage.setItem('username', username)
+  }
   const docSnap = await getDoc(doc(firebaseDB, 'users', username))
   if (docSnap.exists()) {
     data.value = docSnap.data()
-    // console.log('data', JSON.stringify(docSnap.data()))
   }
+  // localStorage.setItem('data', data.value)
   loading.value = false
 }
 
-if (username) {
-  getData(username)
-} else {
-  useRouter().push('/auth')
-}
+onMounted(() => {
+  // Redirect user if they land on home page and have signed in before
+  const storedUsername = localStorage.getItem('username')
+  console.log('storedUsername', storedUsername)
+  if (storedUsername) {
+    useRouter().push(`/${storedUsername}`)
+  }
+
+  // Retrieve user YV Data and their username from URL path
+  const route = useRoute()
+  getData(route.params.id)
+})
 
 const results = computed(() => {
   if (debouncedQuery.value) {
@@ -334,7 +342,7 @@ input {
 }
 
 .yv-search-header {
-  margin-bottom: 1rem;
+  padding-bottom: 0.75rem;
   font-size: 1.2rem;
   font-weight: bold;
 }
