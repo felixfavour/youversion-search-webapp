@@ -343,9 +343,15 @@ input {
 }
 
 .yv-search-header {
-  padding-bottom: 0.75rem;
+  margin-bottom: 0.1rem;
   font-size: 0.95rem;
-  font-weight: bold;
+  font-weight: 600;
+  background: #ffe9eb;
+  color: #ff3d4d;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 36px;
 }
 
 .yv-search-grid {
