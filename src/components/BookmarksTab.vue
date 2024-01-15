@@ -8,6 +8,7 @@
         :key="bookmark.id"
         :item="bookmark"
         v-show="bookmark.kind === 'bookmark'"
+        @bookmark-filter="$emit('bookmark-filter', $event)"
       />
     </div>
     <div v-else class="yv-search-grid come-up">
@@ -16,6 +17,7 @@
         :key="bookmark.id"
         :item="bookmark"
         v-show="bookmark.kind === 'bookmark'"
+        @bookmark-filter="$emit('bookmark-filter', $event)"
       />
     </div>
   </div>

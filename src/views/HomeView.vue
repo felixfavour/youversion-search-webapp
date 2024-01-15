@@ -114,6 +114,7 @@ watch(tab, () => {
             :bookmarks="data?.bookmarks"
             :loading="loading"
             :results="results"
+            @bookmark-filter="query = $event"
           />
 
           <!-- NOTES CARD -->
