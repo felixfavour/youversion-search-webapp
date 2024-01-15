@@ -18,6 +18,7 @@ const loading = ref(false)
 const optionActive = ref(null)
 
 const getData = async (username) => {
+  // console.log('calling getData', username)
   loading.value = true
   if (username) {
     localStorage.setItem('username', username)
@@ -33,14 +34,13 @@ const getData = async (username) => {
 onMounted(() => {
   // Redirect user if they land on home page and have signed in before
   const storedUsername = localStorage.getItem('username')
-  console.log('storedUsername', storedUsername)
   if (storedUsername) {
     useRouter().push(`/${storedUsername}`)
   }
 
   // Retrieve user YV Data and their username from URL path
   const route = useRoute()
-  getData(route.params.id)
+  getData(route.params.id || storedUsername)
 })
 
 const results = computed(() => {
@@ -344,7 +344,7 @@ input {
 
 .yv-search-header {
   padding-bottom: 0.75rem;
-  font-size: 1.2rem;
+  font-size: 0.95rem;
   font-weight: bold;
 }
 
