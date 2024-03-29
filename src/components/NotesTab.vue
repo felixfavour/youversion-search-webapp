@@ -9,6 +9,7 @@
         :item="note"
         v-show="note.kind === 'note'"
       />
+      <button v-if="moreResults" class="primary-btn" @click="$emit('see-more-results')">See more results</button>
     </div>
     <div v-else class="yv-search-grid come-up">
       <YVCard
@@ -17,6 +18,7 @@
         :item="note"
         v-show="note.kind === 'note'"
       />
+      <button v-if="moreData" class="primary-btn" @click="$emit('see-more')">See more results</button>
     </div>
   </div>
 </template>
@@ -35,9 +37,20 @@ export default {
     loading: {
       type: Boolean,
     },
+    moreData: {
+      type: Boolean,
+    },
+    moreResults: {
+      type: Boolean,
+    },
   },
   components: { YVCard, EmptyState },
 }
 </script>
 
-<style></style>
+<style scoped>
+.primary-btn {
+  margin: 5% 0;
+  font-size: 0.9rem;
+}
+</style>

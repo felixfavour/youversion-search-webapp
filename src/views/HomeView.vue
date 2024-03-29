@@ -14,9 +14,13 @@ import MoreTab from '@/components/MoreTab.vue'
 const tab = ref('bookmarks')
 const data = ref({ bookmarks: [], notes: [], lastUpdated: '2023' })
 const query = ref('')
-const debouncedQuery = refDebounced(query, 500)
+const debouncedQuery = refDebounced(query, 300)
 const loading = ref(false)
 const optionActive = ref(null)
+const dataStartIndex = ref(0)
+const dataEndIndex = ref(20)
+const resultsStartIndex = ref(0)
+const resultsEndIndex = ref(20)
 
 const getData = async (username) => {
   // console.log('calling getData', username)
@@ -55,10 +59,6 @@ const results = computed(() => {
     return results?.map((result) => result.obj)
   }
   return null
-})
-
-const resultsLoading = computed(() => {
-  return debouncedQuery.value === results.value
 })
 
 watch(tab, () => {
@@ -117,18 +117,26 @@ watch(tab, () => {
           <!-- BOOKMARKS CARD -->
           <BookmarksTab
             v-if="tab === 'bookmarks'"
-            :bookmarks="data?.bookmarks"
+            :bookmarks="data?.bookmarks?.slice(dataStartIndex, dataEndIndex)"
+            :more-data="data?.bookmarks?.length > dataEndIndex"
             :loading="loading"
-            :results="results"
+            :results="results?.slice(resultsStartIndex, resultsEndIndex)"
+            :more-results="results?.length > resultsEndIndex"
             @bookmark-filter="query = $event"
+            @see-more="dataEndIndex += 20"
+            @see-more-results="resultsEndIndex += 20"
           />
 
           <!-- NOTES CARD -->
           <NotesTab
             v-if="tab === 'notes'"
-            :notes="data?.notes"
+            :notes="data?.notes?.slice(dataStartIndex, dataEndIndex)"
+            :more-data="data?.notes?.length > dataEndIndex"
             :loading="loading"
-            :results="results"
+            :results="results?.slice(resultsStartIndex, resultsEndIndex)"
+            :more-results="results?.length > resultsEndIndex"
+            @see-more="dataEndIndex += 20"
+            @see-more-results="resultsEndIndex += 20"
           />
         </div>
       </template>
@@ -201,6 +209,10 @@ header input {
 #youversion-search {
   position: relative;
   background: transparent;
+}
+
+#youversion-search-list {
+  padding-bottom: 5%;
 }
 
 #youversion-search button#open-search {
