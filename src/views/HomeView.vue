@@ -1,4 +1,5 @@
 <script setup>
+import fuzzysort from "fuzzysort"
 import { ref, watch, computed, onMounted } from 'vue'
 import { refDebounced } from '@vueuse/core'
 import { useCookies } from '@vueuse/integrations/useCookies'
@@ -13,7 +14,7 @@ import MoreTab from '@/components/MoreTab.vue'
 const tab = ref('bookmarks')
 const data = ref({ bookmarks: [], notes: [], lastUpdated: '2023' })
 const query = ref('')
-const debouncedQuery = refDebounced(query, 1500)
+const debouncedQuery = refDebounced(query, 500)
 const loading = ref(false)
 const optionActive = ref(null)
 
@@ -26,6 +27,8 @@ const getData = async (username) => {
   const docSnap = await getDoc(doc(firebaseDB, 'users', username))
   if (docSnap.exists()) {
     data.value = docSnap.data()
+    data.value.bookmarks = data.value.bookmarks.map(bookmark => ({...bookmark, labels: bookmark.labels.toString(), references: bookmark.references.toString()}))
+    data.value.notes = data.value.notes.map(note => ({...note, labels: note.labels.toString(), references: note.references.toString()}))
   }
   // localStorage.setItem('data', data.value)
   loading.value = false
@@ -46,14 +49,16 @@ onMounted(() => {
 const results = computed(() => {
   if (debouncedQuery.value) {
     let cardsInner = tab.value === 'bookmarks' ? data.value.bookmarks || [] : data.value.notes || []
-    return cardsInner.filter(
-      (card) =>
-        JSON.stringify(card.labels)?.toLowerCase().includes(query.value.toLowerCase()) ||
-        JSON.stringify(card.references)?.toLowerCase().includes(query.value.toLowerCase()) ||
-        JSON.stringify(card.content)?.toLowerCase().includes(query.value.toLowerCase())
-    )
+    const results = fuzzysort.go(query.value, cardsInner, {
+      keys: ["labels", "references", "moment_title", 'content'],
+    })
+    return results?.map((result) => result.obj)
   }
   return null
+})
+
+const resultsLoading = computed(() => {
+  return debouncedQuery.value === results.value
 })
 
 watch(tab, () => {
@@ -108,6 +113,7 @@ watch(tab, () => {
       </header>
       <template v-if="tab !== 'more'">
         <div id="youversion-search-list">
+        <!-- {{ resultsLoading }} -->
           <!-- BOOKMARKS CARD -->
           <BookmarksTab
             v-if="tab === 'bookmarks'"

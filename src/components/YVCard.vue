@@ -5,10 +5,13 @@
         {{ item.content || removeHTML(item.moment_title) }}
       </div>
       <div class="labels">
-        <button v-for="chip in item.labels" :key="chip" class="label chip" @click="$emit('bookmark-filter', chip)">
+        <template v-if="item.kind !== 'note'">
+
+        <button v-for="chip in item.labels?.split(',')" :key="chip" class="label chip" @click="$emit('bookmark-filter', chip)">
           {{ chip }}
         </button>
-        <a v-for="(scripture, index) in item.references" :key="scripture" :href="`https://my.bible.com/bible/111/${item.links?.at(index)}`" target="_blank" class="scripture chip favour">
+        </template>
+        <a v-for="(scripture, index) in item.references?.split(',')" :key="scripture" :href="`https://my.bible.com/bible/111/${item.links?.at(index)}`" target="_blank" class="scripture chip favour">
           {{ scripture }}
         </a>
       </div>
